@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Költségbecslés – 3D Builder Titánháló + Implantátum Csomag (K+F)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            padding: 40px 20px;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a5276 0%, #2980b9 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 1.6em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .header .subtitle {
+            font-size: 1.05em;
+            opacity: 0.9;
+        }
+        .header .project-type {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .content {
+            padding: 25px 35px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 1.1em;
+            color: #1a5276;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 0.82em;
+        }
+        th {
+            background: #ecf0f1;
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: left;
+            padding: 9px 10px;
+            border-bottom: 2px solid #bdc3c7;
+        }
+        td {
+            padding: 7px 10px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .total-row {
+            background: #e8f4f8 !important;
+            font-weight: 600;
+        }
+        .total-row td {
+            border-top: 2px solid #3498db;
+            color: #1a5276;
+        }
+        .summary-box {
+            background: linear-gradient(135deg, #1a5276 0%, #2980b9 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        .summary-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        .summary-table {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        .summary-table th {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        .summary-table td {
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .summary-table .grand-total {
+            background: rgba(255,255,255,0.25) !important;
+            font-size: 1.1em;
+        }
+        .notes {
+            background: #fef9e7;
+            border-left: 4px solid #f39c12;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        .notes h4 {
+            color: #d68910;
+            margin-bottom: 10px;
+        }
+        .notes table td {
+            padding: 5px 10px;
+            font-size: 0.82em;
+        }
+        .badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.68em;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .badge-kf {
+            background: #8e44ad;
+        }
+        .number {
+            text-align: right;
+            font-family: 'Consolas', monospace;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #7f8c8d;
+            font-size: 0.85em;
+        }
+        .price-note {
+            background: #eaf2f8;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 18px;
+            font-size: 0.88em;
+        }
+        .price-note strong {
+            color: #1a5276;
+        }
+        .warning-box {
+            background: #fdedec;
+            border-left: 4px solid #e74c3c;
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 18px;
+            font-size: 0.88em;
+        }
+        .warning-box strong {
+            color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Költségbecslés – 3D Builder Titánháló + Implantátum</h1>
+            <div class="subtitle">3000 darabos kiszerelés | Pályázati előkalkuláció</div>
+            <div class="project-type">🔬 Kutatás-fejlesztési projekt</div>
+        </div>
+        
+        <div class="content">
+            <!-- TITÁN ÁRAK REFERENCIA -->
+            <div class="price-note">
+                <strong>Titán alapanyag árak (orvosi minőség):</strong><br>
+                • Ti Gr5 ELI rúd Ø4-5mm (ASTM F136): <strong>120 EUR/kg</strong><br>
+                • Ti Gr2/Gr5 fólia 0,1mm (ASTM F67/F136): <strong>300 EUR/kg</strong> (speciális hengerelt termék)
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Titán megmunkálás:</strong> Az élettartamok a Ti6Al4V anyag extrém koptatóhatása miatt jelentősen rövidebbek, mint acélnál. A szerszámköltségek ennek megfelelően magasabbak.
+            </div>
+
+            <!-- 1. ALAPANYAGOK -->
+            <div class="section">
+                <h2 class="section-title">1. Alapanyagköltségek</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tétel</th>
+                            <th>Specifikáció</th>
+                            <th>Mennyiség/db</th>
+                            <th>Egységár</th>
+                            <th class="number">EUR/db</th>
+                            <th class="number">3000 db (EUR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Implantátum titán rúd</strong></td>
+                            <td>Gr5 ELI (ASTM F136), Ø4-5mm</td>
+                            <td>~4g/db</td>
+                            <td>120 EUR/kg</td>
+                            <td class="number">0,48</td>
+                            <td class="number">1.440</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Titán fólia (háló)</strong></td>
+                            <td>Gr2/Gr5, 0,1mm vastag</td>
+                            <td>~2g (+hulladék)</td>
+                            <td>300 EUR/kg</td>
+                            <td class="number">0,60</td>
+                            <td class="number">1.800</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zárócsavar titán</strong></td>
+                            <td>Gr5, Ø2mm rúdból</td>
+                            <td>~0,3g/db</td>
+                            <td>120 EUR/kg</td>
+                            <td class="number">0,03</td>
+                            <td class="number">90</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="4"><strong>Alapanyag összesen</strong></td>
+                            <td class="number"><strong>1,11</strong></td>
+                            <td class="number"><strong>3.330</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 2. SZERSZÁMOK -->
+            <div class="section">
+                <h2 class="section-title">2. Szerszámköltségek (CNC esztergálás)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tétel</th>
+                            <th>Leírás</th>
+                            <th>Élettartam</th>
+                            <th>Szerszám ár</th>
+                            <th class="number">EUR/db</th>
+                            <th class="number">3000 db (EUR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Keményfém maró</strong></td>
+                            <td>VHM 5-élű, TiAlN bevonat</td>
+                            <td>~60 db</td>
+                            <td>55-80 EUR</td>
+                            <td class="number">1,10</td>
+                            <td class="number">3.300</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Esztergakés (külső)</strong></td>
+                            <td>VCGT/DCGT lapka, Ti-s</td>
+                            <td>~80 db</td>
+                            <td>12-18 EUR</td>
+                            <td class="number">0,19</td>
+                            <td class="number">570</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Esztergakés (belső)</strong></td>
+                            <td>Belső profil lapka</td>
+                            <td>~70 db</td>
+                            <td>18-25 EUR</td>
+                            <td class="number">0,31</td>
+                            <td class="number">930</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Leszúrókés</strong></td>
+                            <td>VHM/lapkás, 2-3mm széles</td>
+                            <td>~200 db</td>
+                            <td>25-35 EUR</td>
+                            <td class="number">0,15</td>
+                            <td class="number">450</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fúrók</strong></td>
+                            <td>Ø1,6-3,5mm VHM, bevonatolt</td>
+                            <td>~120 db</td>
+                            <td>25-40 EUR</td>
+                            <td class="number">0,27</td>
+                            <td class="number">810</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Menetmaró/-fúró</strong></td>
+                            <td>M1,6-M2 implant menetek</td>
+                            <td>~40 db</td>
+                            <td>35-50 EUR</td>
+                            <td class="number">1,06</td>
+                            <td class="number">3.180</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Háló vágószerszám</strong></td>
+                            <td>Lézer/stancoló kopás</td>
+                            <td>~250 db</td>
+                            <td>40-60 EUR</td>
+                            <td class="number">0,20</td>
+                            <td class="number">600</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vágóolaj/hűtő-kenő</strong></td>
+                            <td>Szintetikus, Ti-hoz</td>
+                            <td>~20ml/db</td>
+                            <td>15-20 EUR/L</td>
+                            <td class="number">0,35</td>
+                            <td class="number">1.050</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="4"><strong>Szerszám összesen</strong></td>
+                            <td class="number"><strong>3,63</strong></td>
+                            <td class="number"><strong>10.890</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 3. FELÜLETKEZELÉS -->
+            <div class="section">
+                <h2 class="section-title">3. Felületkezelés</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tétel</th>
+                            <th>Leírás</th>
+                            <th>Felhasználás/db</th>
+                            <th class="number">EUR/db</th>
+                            <th class="number">3000 db (EUR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Szóróanyag (Al₂O₃)</strong></td>
+                            <td>Fehér korund 110-150 µm</td>
+                            <td>~8g/db (+ veszteség)</td>
+                            <td class="number">0,04</td>
+                            <td class="number">120</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mosószer</strong></td>
+                            <td>Ultrahangos tisztító koncentrátum</td>
+                            <td>~3ml/db</td>
+                            <td class="number">0,02</td>
+                            <td class="number">60</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Passziváló oldat</strong></td>
+                            <td>Citromsavas/salétromsavas kezelés</td>
+                            <td>~5ml/db</td>
+                            <td class="number">0,03</td>
+                            <td class="number">90</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Öblítő víz (DI)</strong></td>
+                            <td>Desztillált/deionizált víz</td>
+                            <td>~80ml/db</td>
+                            <td class="number">0,01</td>
+                            <td class="number">30</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3"><strong>Felületkezelés összesen</strong></td>
+                            <td class="number"><strong>0,10</strong></td>
+                            <td class="number"><strong>300</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 4. K+F FOGYÓESZKÖZÖK -->
+            <div class="section">
+                <h2 class="section-title">4. K+F fogyóeszközök és laboranyagok <span class="badge badge-kf">K+F</span></h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tétel</th>
+                            <th>Leírás</th>
+                            <th>Felhasználás/db</th>
+                            <th class="number">EUR/db</th>
+                            <th class="number">3000 db (EUR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Nitril kesztyű</strong></td>
+                            <td>Púdermentes, orvosi minőség</td>
+                            <td>~2 pár/db</td>
+                            <td class="number">0,04</td>
+                            <td class="number">120</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Törlőkendő (lint-free)</strong></td>
+                            <td>Tisztaszobai minőség</td>
+                            <td>~3 db/db</td>
+                            <td class="number">0,02</td>
+                            <td class="number">60</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IPA (izopropil-alkohol)</strong></td>
+                            <td>99,9%, felülettisztításhoz</td>
+                            <td>~5 ml/db</td>
+                            <td class="number">0,01</td>
+                            <td class="number">30</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fogyó laboreszköz</strong></td>
+                            <td>Egyszer használatos labor kellékek</td>
+                            <td>arányosítva</td>
+                            <td class="number">0,07</td>
+                            <td class="number">200</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tároló tasak</strong></td>
+                            <td>ESD/tiszta, gyártásközi tárolás</td>
+                            <td>~1 db/db</td>
+                            <td class="number">0,02</td>
+                            <td class="number">60</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Jelölő/nyomkövető címke</strong></td>
+                            <td>Belső azonosító K+F mintákhoz</td>
+                            <td>~1 db/db</td>
+                            <td class="number">0,01</td>
+                            <td class="number">30</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mérőeszköz kopás</strong></td>
+                            <td>Tolómérő, menetmérő, mikrométer</td>
+                            <td>arányosítva</td>
+                            <td class="number">0,03</td>
+                            <td class="number">90</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dokumentációs anyag</strong></td>
+                            <td>Mérési jegyzőkönyv, nyomtatás</td>
+                            <td>~2 lap/db</td>
+                            <td class="number">0,01</td>
+                            <td class="number">30</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Védőfelszerelés (egyéb)</strong></td>
+                            <td>Maszk, védőszemüveg, laborköpeny</td>
+                            <td>arányosítva</td>
+                            <td class="number">0,02</td>
+                            <td class="number">60</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3"><strong>K+F fogyóeszköz összesen</strong></td>
+                            <td class="number"><strong>0,23</strong></td>
+                            <td class="number"><strong>680</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 5. CSOMAGOLÁS -->
+            <div class="section">
+                <h2 class="section-title">5. Csomagolási költségek (steril) <span class="badge">Hőlégsterilizálás</span></h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tétel</th>
+                            <th>Leírás</th>
+                            <th class="number">EUR/db</th>
+                            <th class="number">3000 db (EUR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Bliszter (belső)</strong></td>
+                            <td>PETG/alu egyedi forma, hőálló, impl.+háló</td>
+                            <td class="number">0,40</td>
+                            <td class="number">1.200</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Steril tasak (külső)</strong></td>
+                            <td>Hőálló papír/fólia peel-pouch, Tyvek-kompatibilis</td>
+                            <td class="number">0,30</td>
+                            <td class="number">900</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kartondoboz</strong></td>
+                            <td>Egyedi nyomott, kis széria (3000 db)</td>
+                            <td class="number">0,40</td>
+                            <td class="number">1.200</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Címke (IFU + UDI)</strong></td>
+                            <td>Nyomtatott, MDR-kompatibilis, nyomkövetéssel</td>
+                            <td class="number">0,12</td>
+                            <td class="number">360</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Használati útmutató</strong></td>
+                            <td>Többnyelvű betétlap, K+F változatok</td>
+                            <td class="number">0,08</td>
+                            <td class="number">240</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hőlégsterilizálás</strong></td>
+                            <td>Saját berendezés (energia+validálás)</td>
+                            <td class="number">0,10</td>
+                            <td class="number">300</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="2"><strong>Csomagolás összesen</strong></td>
+                            <td class="number"><strong>1,40</strong></td>
+                            <td class="number"><strong>4.200</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ÖSSZESÍTÉS -->
+            <div class="summary-box">
+                <h3>ÖSSZESÍTÉS – 3000 DB (K+F PROJEKT)</h3>
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Költségkategória</th>
+                            <th class="number">EUR/csomag</th>
+                            <th class="number">3000 db (EUR)</th>
+                            <th class="number">3000 db (HUF)*</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1. Alapanyag</td>
+                            <td class="number">1,11</td>
+                            <td class="number">3.330</td>
+                            <td class="number">1.332.000</td>
+                        </tr>
+                        <tr>
+                            <td>2. Szerszámok</td>
+                            <td class="number">3,63</td>
+                            <td class="number">10.890</td>
+                            <td class="number">4.356.000</td>
+                        </tr>
+                        <tr>
+                            <td>3. Felületkezelés</td>
+                            <td class="number">0,10</td>
+                            <td class="number">300</td>
+                            <td class="number">120.000</td>
+                        </tr>
+                        <tr>
+                            <td>4. K+F fogyóeszközök</td>
+                            <td class="number">0,23</td>
+                            <td class="number">680</td>
+                            <td class="number">272.000</td>
+                        </tr>
+                        <tr>
+                            <td>5. Csomagolás</td>
+                            <td class="number">1,40</td>
+                            <td class="number">4.200</td>
+                            <td class="number">1.680.000</td>
+                        </tr>
+                        <tr class="grand-total">
+                            <td><strong>ÖSSZESEN</strong></td>
+                            <td class="number"><strong>6,47</strong></td>
+                            <td class="number"><strong>19.400</strong></td>
+                            <td class="number"><strong>7.760.000</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="margin-top: 12px; font-size: 0.85em; opacity: 0.8;">*HUF átszámítás 400 HUF/EUR árfolyammal</p>
+            </div>
+
+            <!-- MEGJEGYZÉSEK -->
+            <div class="section" style="margin-top: 30px;">
+                <div class="notes">
+                    <h4>Megjegyzések a pályázathoz</h4>
+                    <table>
+                        <tr>
+                            <td><strong>Tartalék</strong></td>
+                            <td>Javasolt +15% ráhagyás anyagár-ingadozásra → <strong>~8,9 M Ft összesen</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nem tartalmazza</strong></td>
+                            <td>Gépi amortizáció, munkadíj, minőségellenőrzés, validálás, K+F személyi költség</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Titán beszerzés</strong></td>
+                            <td>Orvosi minőségű (ASTM F136/F67), tanúsított alapanyag</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ti fólia 0,1mm</strong></td>
+                            <td>Speciális hengerelt termék, magasabb egységár</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Szerszámköltség</strong></td>
+                            <td>Ti6Al4V anyag extrém koptatóhatása miatt rövidebb élettartammal kalkulálva</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MDR megfelelőség</strong></td>
+                            <td>UDI-címkézés, nyomonkövethetőség költsége beépítve</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hőlégsterilizálás</strong></td>
+                            <td>Saját berendezéssel, éves validálási költség beépítve</td>
+                        </tr>
+                        <tr>
+                            <td><strong>K+F fogyóeszközök</strong></td>
+                            <td>Labor- és védőfelszerelések, mérési dokumentáció</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            BIONIKA Medline Kft. | K+F Pályázati költségbecslés | 2025
+        </div>
+    </div>
+</body>
+</html>
